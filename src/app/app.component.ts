@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SamplesService } from './core/samples.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'chimes';
+
+  constructor(private samples: SamplesService) {}
+
+  public play() {
+    const path = this.samples.getRandomSample();
+    new Audio(path).play();
+  }
 }
