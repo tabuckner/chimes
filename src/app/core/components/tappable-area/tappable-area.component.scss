@@ -1,5 +1,16 @@
 .tappable-area {
+  position: relative;
   width: 100vw;
   height: 100vh;
-  background: black;
+  background: transparent;
+
+  &__canvas-outlet {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+canvas#overlay-canvas {
 }
