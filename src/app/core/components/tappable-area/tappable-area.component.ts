@@ -18,7 +18,7 @@ export class TappableAreaComponent implements OnInit {
   constructor(private sample: SamplesService,
               private el: ElementRef) { }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize', [])
   public onResize() {
     this.p5.resizeCanvas(this.tappableAreaDimensions.width, this.tappableAreaDimensions.height);
   }
