@@ -1,8 +1,8 @@
-import { Component, OnInit, ElementRef, AfterViewInit } from '@angular/core';
-import { SamplesService } from '../../samples.service';
-
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import * as p5 from 'p5';
-import { Subject, Observable } from 'rxjs';
+
+import { SamplesService } from '../../samples.service';
+import { Burst } from '../../classes/burst';
 
 @Component({
   selector: 'app-tappable-area',
@@ -18,12 +18,16 @@ export class TappableAreaComponent implements OnInit {
   constructor(private sample: SamplesService,
               private el: ElementRef) { }
 
+  @HostListener('window:resize', ['$event'])
+  public onResize() {
+    this.p5.resizeCanvas(this.tappableAreaDimensions.width, this.tappableAreaDimensions.height);
+  }
+
   ngOnInit() {
     this.p5 = new p5((p: p5) => {
-      const dimensions = (this.el.nativeElement as HTMLElement).getBoundingClientRect();
 
       p.setup = () => {
-        p.createCanvas(dimensions.width, dimensions.height).id('overlay-canvas');
+        p.createCanvas(this.tappableAreaDimensions.width, this.tappableAreaDimensions.height).id('overlay-canvas');
       };
 
       p.draw = () => {
@@ -47,48 +51,12 @@ export class TappableAreaComponent implements OnInit {
     this.bursts.push(nextBurst);
   }
 
+  private get tappableAreaDimensions(): DOMRect | ClientRect {
+    return (this.el.nativeElement as HTMLElement).getBoundingClientRect();
+  }
 
   private playRandomSample() {
     const path = this.sample.getRandomSample();
     new Audio(path).play();
-  }
-}
-
-class Burst {
-  public invisible = false;
-  private x: number;
-  private y: number;
-  private radius = 20;
-  private ctx: p5;
-  private color: p5.Color;
-  private alpha = 255;
-  private radiusRate: number;
-  private alphaRate: number;
-
-
-  constructor(sketchInstance: p5, xPos: number, yPos: number, radiusRate = 1, alphaRate = 2) {
-    this.ctx = sketchInstance;
-    this.x = xPos;
-    this.y = yPos;
-    this.radiusRate = radiusRate;
-    this.alphaRate = alphaRate;
-    this.color = this.ctx.color(100, 50, 150);
-  }
-
-  show() {
-    this.ctx.noStroke();
-    this.ctx.fill(this.color);
-    this.ctx.ellipse(this.x, this.y, this.radius * 2);
-    this.ctx.redraw();
-  }
-
-  animate() {
-    this.radius += this.radiusRate;
-    this.alpha -= this.alphaRate;
-    this.color.setAlpha(this.alpha);
-
-    if (this.ctx.alpha(this.color) < 1) {
-      this.invisible = true;
-    }
   }
 }
